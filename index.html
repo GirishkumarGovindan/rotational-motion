@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rotational Dynamics Master Lab - Class 11 Physics</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- KaTeX for crisp mathematical formulas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #050811;
+      color: #e2e8f0;
+    }
+    .font-mono {
+      font-family: 'Fira Code', monospace;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      background: #1e293b;
+      height: 6px;
+      border-radius: 9999px;
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #38bdf8;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.7);
+      transition: transform 0.1s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+    .active-nav-tab {
+      background: rgba(56, 189, 248, 0.15) !important;
+      color: #38bdf8 !important;
+      border-color: rgba(56, 189, 248, 0.4) !important;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Vector badge accent styling */
+    .vec-symbol {
+      display: inline-block;
+      position: relative;
+    }
+    .vec-symbol::after {
+      content: "→";
+      position: absolute;
+      top: -0.65em;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0.9);
+      font-size: 0.75em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#050811] text-slate-100 antialiased selection:bg-cyan-500 selection:text-black">
+
+  <header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-50 px-4 py-2.5">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="p-2 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 shadow-md shadow-cyan-500/20 text-white">
+          <i data-lucide="orbit" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-bold tracking-tight bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">
+              System of Particles &amp; Rotational Dynamics
+            </h1>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-800 text-cyan-300 font-mono font-semibold">NCERT Class 11</span>
+          </div>
+          <p class="text-xs text-slate-400">Interactive Visual Laboratory &amp; Complete Concept Revision</p>
+        </div>
+      </div>
+
+      <!-- Quick Global Utilities -->
+      <div class="flex items-center gap-2.5">
+        <div class="hidden sm:flex items-center space-x-2 px-3 py-1 rounded-lg border border-slate-800 bg-slate-950/80 text-xs">
+          <i data-lucide="compass" class="w-3.5 h-3.5 text-cyan-400"></i>
+          <span class="text-slate-400">Right-Hand Rule:</span>
+          <span id="globalRHRBadge" class="font-mono text-cyan-300 font-bold">OUT (+z) &#x2299;</span>
+        </div>
+        <button onclick="openFormulaModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-500/40 text-xs text-indigo-200 transition font-medium">
+          <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+          <span>Formula Sheet</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Module Bar -->
+    <nav class="max-w-7xl mx-auto mt-2.5 flex gap-1.5 overflow-x-auto no-scrollbar border-t border-slate-800/60 pt-2 text-xs">
+      <button onclick="navigateToModule('turntable')" id="nav-turntable" class="module-nav-btn active-nav-tab flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-transparent font-medium whitespace-nowrap text-slate-300 hover:text-white transition">
+        <i data-lucide="disc" class="w-3.5 h-3.5"></i> 1. Kinematics &amp; Vectors
+      </button>
+      <button onclick="navigateToModule('com')" id="nav-com" class="module-nav-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-transparent font-medium whitespace-nowrap text-slate-400 hover:text-white transition">
+        <i data-lucide="crosshair" class="w-3.5 h-3.5"></i> 2. Center of Mass
+      </button>
+      <button onclick="navigateToModule('inertia')" id="nav-inertia" class="module-nav-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-transparent font-medium whitespace-nowrap text-slate-400 hover:text-white transition">
+        <i data-lucide="layers" class="w-3.5 h-3.5"></i> 3. Moment of Inertia
+      </button>
+      <button onclick="navigateToModule('skater')" id="nav-skater" class="module-nav-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-transparent font-medium whitespace-nowrap text-slate-400 hover:text-white transition">
+        <i data-lucide="zap" class="w-3.5 h-3.5"></i> 4. Angular Momentum
+      </button>
+      <button onclick="navigateToModule('incline')" id="nav-incline" class="module-nav-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-transparent font-medium whitespace-nowrap text-slate-400 hover:text-white transition">
+        <i data-lucide="trending-down" class="w-3.5 h-3.5"></i> 5. Incline Rolling Race
+      </button>
+      <button onclick="navigateToModule('quiz')" id="nav-quiz" class="module-nav-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-transparent font-medium whitespace-nowrap text-slate-400 hover:text-white transition">
+        <i data-lucide="help-circle" class="w-3.5 h-3.5"></i> 6. Diagnostic Quiz
+      </button>
+    </nav>
+  </header>
+
+  <main class="flex-1 max-w-7xl mx-auto w-full p-3 sm:p-5">
+
+    <!-- MODULE 1: TURNTABLE & VECTOR PLAYGROUND -->
+    <section id="module-turntable" class="space-y-4">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        
+        <!-- Canvas Visualizer Display -->
+        <div class="lg:col-span-7 bg-slate-900/80 rounded-2xl border border-slate-800 p-4 flex flex-col justify-between items-center relative shadow-lg">
+          <div class="w-full flex flex-wrap items-center justify-between gap-2 z-10 mb-2">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span> Turntable Vector Playground
+            </span>
+
+            <!-- Vector Toggles with Proper Over-Arrows -->
+            <div class="flex items-center space-x-3 text-xs bg-slate-950/70 px-2.5 py-1 rounded-lg border border-slate-800">
+              <label class="flex items-center space-x-1 cursor-pointer text-cyan-400 hover:text-cyan-300">
+                <input type="checkbox" id="chkShowVel" checked class="accent-cyan-500">
+                <span class="text-xs font-mono font-bold"><span class="vec-symbol">v</span></span>
+              </label>
+              <label class="flex items-center space-x-1 cursor-pointer text-amber-400 hover:text-amber-300">
+                <input type="checkbox" id="chkShowAc" checked class="accent-amber-500">
+                <span class="text-xs font-mono font-bold"><span class="vec-symbol">a</span><sub>c</sub></span>
+              </label>
+              <label class="flex items-center space-x-1 cursor-pointer text-rose-400 hover:text-rose-300">
+                <input type="checkbox" id="chkShowAt" checked class="accent-rose-500">
+                <span class="text-xs font-mono font-bold"><span class="vec-symbol">a</span><sub>t</sub></span>
+              </label>
+              <label class="flex items-center space-x-1 cursor-pointer text-indigo-400 hover:text-indigo-300">
+                <input type="checkbox" id="chkShowAnet" checked class="accent-indigo-500">
+                <span class="text-xs font-mono font-bold"><span class="vec-symbol">a</span><sub>net</sub></span>
+              </label>
+              <label class="flex items-center space-x-1 cursor-pointer text-emerald-400 hover:text-emerald-300">
+                <input type="checkbox" id="chkShowForce" checked class="accent-emerald-500">
+                <span class="text-xs font-mono font-bold"><span class="vec-symbol">F</span></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="relative w-full aspect-square max-w-[420px] flex items-center justify-center">
+            <canvas id="turntableCanvas" class="w-full h-full rounded-full border border-slate-700/60 shadow-2xl bg-slate-950"></canvas>
+            
+            <!-- Central Axial Badge for Right Hand Rule -->
+            <div id="axialIconBox" class="absolute pointer-events-none w-14 h-14 rounded-full border border-cyan-500/40 bg-slate-900/90 backdrop-blur-sm flex flex-col items-center justify-center shadow-lg">
+              <span id="centerRHRVector" class="text-xl font-bold font-mono text-cyan-400">&#x2299;</span>
+              <span id="centerRHRDir" class="text-[9px] uppercase tracking-wider text-slate-400 font-semibold">+z</span>
+            </div>
+          </div>
+
+          <!-- Transport Control Bar -->
+          <div class="w-full mt-3 flex items-center justify-between bg-slate-950/80 p-2.5 rounded-xl border border-slate-800">
+            <div class="flex items-center space-x-2">
+              <button id="btnTurntablePlay" onclick="toggleTurntablePlay()" class="p-2 rounded-lg bg-cyan-500 text-slate-950 font-bold hover:bg-cyan-400 transition shadow">
+                <i id="turntablePlayIcon" data-lucide="pause" class="w-4 h-4"></i>
+              </button>
+              <button onclick="resetTurntable()" class="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white transition">
+                <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <div class="text-xs font-mono text-slate-400 flex items-center gap-4">
+              <span>Time: <strong id="turntableTime" class="text-slate-200">0.00s</strong></span>
+              <span>Revs: <strong id="turntableRevs" class="text-cyan-300">0.00</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls & Comparison Card -->
+        <div class="lg:col-span-5 flex flex-col gap-3">
+          
+          <!-- Inner vs Outer Particle Telemetry -->
+          <div class="bg-slate-900/80 rounded-2xl border border-slate-800 p-3.5 shadow-md">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-2 flex items-center justify-between">
+              <span>Particle Vector Comparison ($v = r\omega$)</span>
+              <span class="text-cyan-400 font-mono text-xs">&omega; is identical</span>
+            </h3>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <!-- Inner particle A -->
+              <div class="bg-slate-950/70 p-2.5 rounded-xl border border-amber-500/30">
+                <div class="flex items-center justify-between text-amber-400 font-bold mb-1">
+                  <span>Particle A (Inner)</span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>
+                </div>
+                <div class="text-slate-400 text-[11px]">Radius: <strong class="text-slate-200 font-mono">0.40 m</strong></div>
+                <div class="text-slate-400 text-[11px]">Speed $v_A$: <strong id="tt-vA" class="text-amber-300 font-mono">0.00 m/s</strong></div>
+                <div class="text-slate-400 text-[11px]">Centripetal $a_c$: <strong id="tt-acA" class="text-slate-200 font-mono">0.00 m/s²</strong></div>
+                <div class="text-slate-400 text-[11px]">Tangential $a_t$: <strong id="tt-atA" class="text-slate-200 font-mono">0.00 m/s²</strong></div>
+                <div class="text-slate-400 text-[11px]">Net Accel $a_{net}$: <strong id="tt-anetA" class="text-indigo-300 font-mono">0.00 m/s²</strong></div>
+              </div>
+
+              <!-- Outer particle B -->
+              <div class="bg-slate-950/70 p-2.5 rounded-xl border border-cyan-500/30">
+                <div class="flex items-center justify-between text-cyan-400 font-bold mb-1">
+                  <span>Particle B (Outer)</span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 inline-block"></span>
+                </div>
+                <div class="text-slate-400 text-[11px]">Radius: <strong class="text-slate-200 font-mono">0.90 m</strong></div>
+                <div class="text-slate-400 text-[11px]">Speed $v_B$: <strong id="tt-vB" class="text-cyan-300 font-mono">0.00 m/s</strong></div>
+                <div class="text-slate-400 text-[11px]">Centripetal $a_c$: <strong id="tt-acB" class="text-slate-200 font-mono">0.00 m/s²</strong></div>
+                <div class="text-slate-400 text-[11px]">Tangential $a_t$: <strong id="tt-atB" class="text-slate-200 font-mono">0.00 m/s²</strong></div>
+                <div class="text-slate-400 text-[11px]">Net Accel $a_{net}$: <strong id="tt-anetB" class="text-indigo-300 font-mono">0.00 m/s²</strong></div>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-2 bg-slate-950/40 p-2 rounded border border-slate-800">
+              💡 <strong>Observation:</strong> Both particles sweep identical angle $\theta$ per second, so angular velocity $\omega$ and angular acceleration $\alpha$ are constant throughout the rigid body. But linear velocity $v = r\omega$ is 2.25&times; larger at the outer rim!
+            </p>
+          </div>
+
+          <!-- Parameter Sliders -->
+          <div class="bg-slate-900/80 rounded-2xl border border-slate-800 p-3.5 space-y-3 shadow-md flex-1">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 border-b border-slate-800 pb-1.5">
+              Kinematics &amp; Dynamics Controllers
+            </h3>
+
+            <!-- Omega Slider -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-medium">
+                <span class="text-slate-300">Angular Velocity (&omega;):</span>
+                <span id="lbl-omega" class="font-mono text-cyan-400 font-bold">2.00 rad/s</span>
+              </div>
+              <input type="range" id="rng-omega" min="-10" max="10" step="0.2" value="2" class="w-full" oninput="onTurntableSliderChange()">
+              <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                <span>-10 rad/s (CW &#x2297;)</span>
+                <span>0 rad/s</span>
+                <span>+10 rad/s (CCW &#x2299;)</span>
+              </div>
+            </div>
+
+            <!-- Alpha Slider -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-medium">
+                <span class="text-slate-300">Angular Acceleration (&alpha;):</span>
+                <span id="lbl-alpha" class="font-mono text-rose-400 font-bold">0.50 rad/s²</span>
+              </div>
+              <input type="range" id="rng-alpha" min="-4" max="4" step="0.1" value="0.5" class="w-full" oninput="onTurntableSliderChange()">
+            </div>
+
+            <!-- Applied Torque Controls -->
+            <div class="pt-2 border-t border-slate-800/80 space-y-2">
+              <div class="flex justify-between text-xs font-medium">
+                <span class="text-slate-300">Applied Force ($F$) &amp; Torque (&tau;):</span>
+                <span id="lbl-torque" class="font-mono text-emerald-400 font-bold">&tau; = 3.60 N·m</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="text-[10px] text-slate-400">Force $F$ (N)</label>
+                  <input type="range" id="rng-force" min="0" max="10" step="0.5" value="4.0" class="w-full" oninput="onTurntableSliderChange()">
+                </div>
+                <div>
+                  <label class="text-[10px] text-slate-400">Pull Angle $\phi$ (°)</label>
+                  <input type="range" id="rng-force-angle" min="0" max="180" step="5" value="90" class="w-full" oninput="onTurntableSliderChange()">
+                </div>
+              </div>
+              <p class="text-[10px] text-slate-400">Formula: $\tau = r F \sin\phi$. If $\phi = 0^\circ$ or $180^\circ$ (radial pull), line of action passes through the pivot, producing $\tau = 0$.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE 2: CENTER OF MASS -->
+    <section id="module-com" class="space-y-4 hidden">
+      <div class="bg-slate-900/80 rounded-2xl border border-slate-800 p-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-3 border-b border-slate-800 pb-2.5">
+          <div>
+            <h2 class="text-sm sm:text-base font-bold text-cyan-400 flex items-center gap-2">
+              <i data-lucide="crosshair" class="w-4 h-4"></i> Center of Mass (COM) Interactive Laboratory
+            </h2>
+            <p class="text-xs text-slate-400">Drag mass particles on the 2D plane to watch the centroid shift: $\vec{R}_{cm} = \frac{\sum m_i \vec{r}_i}{\sum m_i}$</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="resetCOMParticles()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-slate-300">Reset Positions</button>
+            <button onclick="addCOMParticle()" class="px-2.5 py-1 rounded bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-300 border border-cyan-500/40 text-xs font-semibold">+ Add Mass</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <!-- 2D Interactive Plane Canvas -->
+          <div class="lg:col-span-8 bg-slate-950 rounded-xl border border-slate-800 p-2 relative h-[380px] flex items-center justify-center overflow-hidden">
+            <canvas id="comCanvas" class="w-full h-full cursor-grab active:cursor-grabbing"></canvas>
+            <div class="absolute bottom-2 left-3 text-[10px] text-slate-500 pointer-events-none font-mono">
+              [Click &amp; Drag mass dots to reposition]
+            </div>
+          </div>
+
+          <!-- COM Telemetry & Mass Mass Sliders -->
+          <div class="lg:col-span-4 flex flex-col gap-3">
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+              <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold block mb-1">Center of Mass Coordinates</span>
+              <div class="text-xl font-bold font-mono text-rose-400" id="comPosText">X: 0.00 m, Y: 0.00 m</div>
+              <div class="text-xs text-slate-400 mt-1">Total Mass: <span id="comTotalMass" class="font-mono text-cyan-300 font-bold">5.0 kg</span></div>
+            </div>
+
+            <!-- Dynamic Mass Sliders list -->
+            <div id="comMassList" class="space-y-2 overflow-y-auto max-h-[220px] pr-1 flex-1">
+              <!-- Populated via JavaScript -->
+            </div>
+
+            <div class="p-2.5 rounded-lg bg-indigo-950/40 border border-indigo-800/40 text-[11px] text-indigo-200">
+              💡 <strong>Key Law:</strong> In an isolated system with no net external force ($\sum \vec{F}_{ext} = 0$), the center of mass velocity $\vec{V}_{cm}$ remains strictly constant: $\vec{P}_{total} = M \vec{V}_{cm} = \text{constant}$.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE 3: MOMENT OF INERTIA -->
+    <section id="module-inertia" class="space-y-4 hidden">
+      <div class="bg-slate-900/80 rounded-2xl border border-slate-800 p-4">
+        <h2 class="text-sm sm:text-base font-bold text-indigo-400 flex items-center gap-2 mb-1">
+          <i data-lucide="layers" class="w-4 h-4"></i> Moment of Inertia ($I$) Catalog &amp; Theorems
+        </h2>
+        <p class="text-xs text-slate-400 mb-4">
+          Rotational inertia $I = \sum m_i r_i^2 = \int r^2 dm$. Unlike mass $M$, $I$ depends heavily on the orientation of the rotational axis and distance from that axis!
+        </p>
+
+        <!-- Standard Bodies Formula Grid with KaTeX -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-5">
+          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center hover:border-cyan-500/40 transition">
+            <div class="text-xs font-semibold text-slate-300">Circular Ring</div>
+            <div class="text-[10px] text-slate-500">Central transverse axis</div>
+            <div class="text-cyan-300 font-mono font-bold my-2 text-sm">$$I = MR^2$$</div>
+            <span class="text-[10px] text-slate-400 font-mono">k = R</span>
+          </div>
+
+          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center hover:border-cyan-500/40 transition">
+            <div class="text-xs font-semibold text-slate-300">Circular Disc</div>
+            <div class="text-[10px] text-slate-500">Central transverse axis</div>
+            <div class="text-cyan-300 font-mono font-bold my-2 text-sm">$$I = \frac{1}{2}MR^2$$</div>
+            <span class="text-[10px] text-slate-400 font-mono">k = R / \sqrt{2}</span>
+          </div>
+
+          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center hover:border-cyan-500/40 transition">
+            <div class="text-xs font-semibold text-slate-300">Solid Cylinder</div>
+            <div class="text-[10px] text-slate-500">Geometric central axis</div>
+            <div class="text-cyan-300 font-mono font-bold my-2 text-sm">$$I = \frac{1}{2}MR^2$$</div>
+            <span class="text-[10px] text-slate-400 font-mono">Same as Disc</span>
+          </div>
+
+          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center hover:border-cyan-500/40 transition">
+            <div class="text-xs font-semibold text-slate-300">Hollow Cylinder</div>
+            <div class="text-[10px] text-slate-500">Geometric axis</div>
+            <div class="text-cyan-300 font-mono font-bold my-2 text-sm">$$I = MR^2$$</div>
+            <span class="text-[10px] text-slate-400 font-mono">Same as Ring</span>
+          </div>
+
+          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center hover:border-indigo-500/40 transition">
+            <div class="text-xs font-semibold text-slate-300">Solid Sphere</div>
+            <div class="text-[10px] text-slate-500">Central diameter</div>
+            <div class="text-indigo-300 font-mono font-bold my-2 text-sm">$$I = \frac{2}{5}MR^2$$</div>
+            <span class="text-[10px] text-slate-400 font-mono">0.40 MR^2</span>
+          </div>
+
+          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center hover:border-indigo-500/40 transition">
+            <div class="text-xs font-semibold text-slate-300">Hollow Sphere</div>
+            <div class="text-[10px] text-slate-500">Central diameter</div>
+            <div class="text-indigo-300 font-mono font-bold my-2 text-sm">$$I = \frac{2}{3}MR^2$$</div>
+            <span class="text-[10px] text-slate-400 font-mono">0.67 MR^2</span>
+          </div>
+
+          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center hover:border-amber-500/40 transition">
+            <div class="text-xs font-semibold text-slate-300">Thin Rod (Center)</div>
+            <div class="text-[10px] text-slate-500">Perpendicular at center</div>
+            <div class="text-amber-300 font-mono font-bold my-2 text-sm">$$I = \frac{1}{12}ML^2$$</div>
+            <span class="text-[10px] text-slate-400 font-mono">Length L</span>
+          </div>
+
+          <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center hover:border-amber-500/40 transition">
+            <div class="text-xs font-semibold text-slate-300">Thin Rod (End)</div>
+            <div class="text-[10px] text-slate-500">Perpendicular at one end</div>
+            <div class="text-amber-300 font-mono font-bold my-2 text-sm">$$I = \frac{1}{3}ML^2$$</div>
+            <span class="text-[10px] text-slate-400 font-mono">Parallel Axis Result</span>
+          </div>
+        </div>
+
+        <!-- Interactive Theorem Visualizers & Calculators -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-slate-800">
+          
+          <!-- Parallel Axis Theorem -->
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs uppercase tracking-wider text-cyan-400">1. Parallel Axis Theorem</span>
+              <span class="font-mono text-xs text-slate-300">$$I = I_{cm} + M d^2$$</span>
+            </div>
+            <p class="text-[11px] text-slate-400">
+              Valid for any rigid 3D body. One of the two parallel axes <strong>must</strong> pass strictly through the Center of Mass!
+            </p>
+            <div class="space-y-2">
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-300">Shift Distance ($d$):</span>
+                <span id="parallel-d-lbl" class="font-mono text-cyan-300 font-bold">0.50 m</span>
+              </div>
+              <input type="range" id="parallel-d" min="0" max="2" step="0.05" value="0.5" class="w-full" oninput="calcParallelAxis()">
+            </div>
+            <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800 text-xs">
+              <div class="text-slate-400">Base Disc ($M=2\text{ kg}, R=1\text{ m}$): $I_{cm} = \frac{1}{2}MR^2 = 1.00\text{ kg}\cdot\text{m}^2$</div>
+              <div class="text-slate-200 mt-1">Shifted Inertia: <strong id="parallel-result" class="text-cyan-400 font-mono text-sm">1.50 kg·m²</strong></div>
+            </div>
+          </div>
+
+          <!-- Perpendicular Axis Theorem -->
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs uppercase tracking-wider text-purple-400">2. Perpendicular Axis Theorem</span>
+              <span class="font-mono text-xs text-slate-300">$$I_z = I_x + I_y$$</span>
+            </div>
+            <p class="text-[11px] text-slate-400">
+              ⚠️ <strong>Strict Prerequisite:</strong> Applicable only to 2D planar bodies (laminae) where $x$ and $y$ axes lie in the plane, and $z$ is normal.
+            </p>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <label class="text-[10px] text-slate-400">$I_x$ (In-plane axis 1)</label>
+                <input type="range" id="perp-ix" min="0.5" max="5" step="0.1" value="1.5" class="w-full" oninput="calcPerpAxis()">
+                <div id="perp-ix-lbl" class="font-mono text-slate-300 text-center mt-1">1.50 kg·m²</div>
+              </div>
+              <div>
+                <label class="text-[10px] text-slate-400">$I_y$ (In-plane axis 2)</label>
+                <input type="range" id="perp-iy" min="0.5" max="5" step="0.1" value="2.0" class="w-full" oninput="calcPerpAxis()">
+                <div id="perp-iy-lbl" class="font-mono text-slate-300 text-center mt-1">2.00 kg·m²</div>
+              </div>
+            </div>
+            <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800 text-xs">
+              <div class="text-slate-200">Perpendicular Axis ($I_z$): <strong id="perp-result" class="text-purple-400 font-mono text-sm">3.50 kg·m²</strong></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE 4: ANGULAR MOMENTUM CONSERVATION -->
+    <section id="module-skater" class="space-y-4 hidden">
+      <div class="bg-slate-900/80 rounded-2xl border border-slate-800 p-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5 mb-3">
+          <div>
+            <h2 class="text-sm sm:text-base font-bold text-purple-400 flex items-center gap-2">
+              <i data-lucide="zap" class="w-4 h-4"></i> Conservation of Angular Momentum ($L = I\omega$)
+            </h2>
+            <p class="text-xs text-slate-400">Figure Skater / Rotating Stool Phenomenon when no external torque acts</p>
+          </div>
+          <span class="text-xs px-2.5 py-1 rounded bg-purple-950/60 text-purple-300 border border-purple-800 font-mono">$$\tau_{ext} = 0 \implies \vec{L} = \text{constant}$$</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <!-- Animation Canvas -->
+          <div class="lg:col-span-7 bg-slate-950 rounded-xl border border-slate-800 p-3 flex flex-col items-center justify-center relative min-h-[340px]">
+            <canvas id="skaterCanvas" class="w-full h-full max-h-[320px] max-w-[320px]"></canvas>
+            <div class="absolute top-3 left-3 bg-slate-900/90 p-2 rounded-lg border border-slate-800 text-[11px] font-mono space-y-1">
+              <div>Inertia $I$: <span id="skater-disp-I" class="text-indigo-400 font-bold">1.80 kg·m²</span></div>
+              <div>Angular Speed &omega;: <span id="skater-disp-w" class="text-cyan-400 font-bold">3.00 rad/s</span></div>
+              <div>Angular Momentum $L$: <span id="skater-disp-L" class="text-purple-400 font-bold">5.40 J·s</span></div>
+              <div>Rotational KE $K$: <span id="skater-disp-KE" class="text-amber-400 font-bold">8.10 J</span></div>
+            </div>
+          </div>
+
+          <!-- Controls & Work-Energy Deep Insight -->
+          <div class="lg:col-span-5 flex flex-col justify-between gap-3">
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+              <div class="space-y-1">
+                <div class="flex justify-between text-xs font-semibold">
+                  <span class="text-slate-300">Arm Extension Radius ($r$):</span>
+                  <span id="skater-r-lbl" class="font-mono text-purple-400 font-bold">0.90 m (Extended)</span>
+                </div>
+                <input type="range" id="skater-r" min="0.2" max="0.95" step="0.02" value="0.9" class="w-full" oninput="updateSkaterPhysics()">
+                <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                  <span>0.20 m (Tucked In)</span>
+                  <span>0.95 m (Extended Out)</span>
+                </div>
+              </div>
+
+              <!-- Quick Presets -->
+              <div class="flex gap-2">
+                <button onclick="setSkaterR(0.2)" class="flex-1 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300">Tuck Arms In (Spin Fast)</button>
+                <button onclick="setSkaterR(0.9)" class="flex-1 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300">Extend Arms (Slow Down)</button>
+              </div>
+            </div>
+
+            <!-- Kinetic Energy Paradox Card -->
+            <div class="bg-amber-950/20 border border-amber-800/40 p-3 rounded-xl text-xs space-y-1.5">
+              <div class="font-bold text-amber-300 flex items-center gap-1.5">
+                <i data-lucide="alert-triangle" class="w-4 h-4"></i> The Kinetic Energy Increase Paradox
+              </div>
+              <p class="text-slate-300 text-[11px] leading-relaxed">
+                When the skater pulls weights inward, $I$ drops so $\omega$ spikes up. Watch the rotational kinetic energy:
+                $$K_{rot} = \frac{L^2}{2I}$$
+                Because $L$ is constant and $I$ decreased, <strong>$K_{rot}$ actually increases!</strong>
+              </p>
+              <p class="text-amber-200/80 text-[11px]">
+                <em>Where does this energy come from?</em> The skater's muscles do positive internal work against the centrifugal tendency while pulling the weights inward!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE 5: INCLINE ROLLING RACE -->
+    <section id="module-incline" class="space-y-4 hidden">
+      <div class="bg-slate-900/80 rounded-2xl border border-slate-800 p-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5 mb-3">
+          <div>
+            <h2 class="text-sm sm:text-base font-bold text-amber-400 flex items-center gap-2">
+              <i data-lucide="trending-down" class="w-4 h-4"></i> Pure Rolling Motion on an Inclined Plane
+            </h2>
+            <p class="text-xs text-slate-400">The Great Race: Ring, Disc, Solid Sphere &amp; Hollow Sphere down an incline of angle $\theta$</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="startInclineRace()" class="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition flex items-center gap-1">
+              <i data-lucide="play" class="w-3.5 h-3.5"></i> Start Race
+            </button>
+            <button onclick="resetInclineRace()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Reset
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <!-- Incline Race Animation Canvas -->
+          <div class="lg:col-span-8 bg-slate-950 rounded-xl border border-slate-800 p-2 h-[340px] relative overflow-hidden flex items-center justify-center">
+            <canvas id="inclineCanvas" class="w-full h-full"></canvas>
+            <div id="raceWinnerBanner" class="hidden absolute top-4 bg-emerald-500 text-slate-950 font-bold text-xs px-3.5 py-1.5 rounded-full shadow-lg animate-bounce">
+              🏆 Solid Sphere Finishes First!
+            </div>
+          </div>
+
+          <!-- Acceleration Table & Incline Controls -->
+          <div class="lg:col-span-4 flex flex-col justify-between gap-3">
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2">
+              <div class="flex justify-between text-xs font-semibold">
+                <span class="text-slate-300">Incline Angle ($\theta$):</span>
+                <span id="incline-angle-lbl" class="font-mono text-amber-400 font-bold">25°</span>
+              </div>
+              <input type="range" id="incline-angle" min="10" max="45" step="1" value="25" class="w-full" oninput="updateInclineAngle()">
+            </div>
+
+            <!-- Standings & Acceleration formula table -->
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs space-y-2">
+              <span class="font-bold text-slate-300 uppercase tracking-wider text-[11px] block">
+                Pure Rolling Acceleration: $a = \frac{g\sin\theta}{1 + k^2/R^2}$
+              </span>
+              
+              <div class="space-y-1.5 font-mono text-[11px]">
+                <div class="flex justify-between items-center p-1.5 rounded bg-emerald-950/40 border border-emerald-800/40 text-emerald-300">
+                  <span>1. Solid Sphere ($k^2/R^2 = 2/5$)</span>
+                  <strong>0.714 g sin&theta;</strong>
+                </div>
+                <div class="flex justify-between items-center p-1.5 rounded bg-cyan-950/40 border border-cyan-800/40 text-cyan-300">
+                  <span>2. Solid Disc ($k^2/R^2 = 1/2$)</span>
+                  <strong>0.667 g sin&theta;</strong>
+                </div>
+                <div class="flex justify-between items-center p-1.5 rounded bg-indigo-950/40 border border-indigo-800/40 text-indigo-300">
+                  <span>3. Hollow Sphere ($k^2/R^2 = 2/3$)</span>
+                  <strong>0.600 g sin&theta;</strong>
+                </div>
+                <div class="flex justify-between items-center p-1.5 rounded bg-rose-950/40 border border-rose-800/40 text-rose-300">
+                  <span>4. Ring / Shell ($k^2/R^2 = 1$)</span>
+                  <strong>0.500 g sin&theta;</strong>
+                </div>
+              </div>
+              <p class="text-[10px] text-slate-400 pt-1">
+                Smaller $k^2/R^2$ (radius of gyration ratio) &rarr; smaller fraction of potential energy goes to spin &rarr; faster linear acceleration! Mass and radius do NOT matter!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE 6: DIAGNOSTIC QUIZ -->
+    <section id="module-quiz" class="space-y-4 hidden">
+      <div class="bg-slate-900/80 rounded-2xl border border-slate-800 p-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+          <div>
+            <h2 class="text-base font-bold text-cyan-400 flex items-center gap-2">
+              <i data-lucide="help-circle" class="w-5 h-5"></i> Class 11 Rotational Diagnostic Quiz
+            </h2>
+            <p class="text-xs text-slate-400">High-yield conceptual questions targeting common CBSE &amp; JEE exam traps</p>
+          </div>
+          <div class="bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800 font-mono text-xs">
+            Score: <span id="quizScoreText" class="text-cyan-400 font-bold">0 / 5</span>
+          </div>
+        </div>
+
+        <div id="quizContainer" class="space-y-4">
+          <!-- Rendered dynamically via JS -->
+        </div>
+
+        <div class="pt-4 flex justify-between items-center border-t border-slate-800 mt-4">
+          <button onclick="resetQuiz()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200">
+            Reset Quiz
+          </button>
+          <span id="quizFeedbackFinal" class="text-xs text-slate-400 font-medium"></span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FORMULA & ANALOGIES MODAL -->
+  <div id="formulaModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-3 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="flex items-center justify-between p-4 border-b border-slate-800">
+        <h3 class="font-bold text-sm sm:text-base text-cyan-400 flex items-center gap-2">
+          <i data-lucide="book-open" class="w-4 h-4"></i> Translational vs. Rotational Dynamics Analogies
+        </h3>
+        <button onclick="closeFormulaModal()" class="p-1 rounded-lg text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      
+      <div class="p-4 overflow-y-auto space-y-4 text-xs">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-800 text-slate-400 font-semibold uppercase text-[10px]">
+              <th class="py-2 px-3">Translational Motion</th>
+              <th class="py-2 px-3">Rotational Motion</th>
+              <th class="py-2 px-3">Connecting Bridge</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60 font-mono text-slate-300">
+            <tr>
+              <td class="py-2.5 px-3">Displacement $x$</td>
+              <td class="py-2.5 px-3 text-cyan-300">Angular Pos $\theta$</td>
+              <td class="py-2.5 px-3 text-slate-400">$s = r\theta$</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3">Velocity $v = \frac{dx}{dt}$</td>
+              <td class="py-2.5 px-3 text-cyan-300">Angular Velocity $\omega = \frac{d\theta}{dt}$</td>
+              <td class="py-2.5 px-3 text-slate-400">$v = r\omega$</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3">Acceleration $a = \frac{dv}{dt}$</td>
+              <td class="py-2.5 px-3 text-rose-300">Angular Accel $\alpha = \frac{d\omega}{dt}$</td>
+              <td class="py-2.5 px-3 text-slate-400">$a_t = r\alpha,\; a_c = r\omega^2$</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3">Mass $m$ (Inertia)</td>
+              <td class="py-2.5 px-3 text-indigo-300">Moment of Inertia $I$</td>
+              <td class="py-2.5 px-3 text-slate-400">$I = \sum m_i r_i^2 = \int r^2 dm$</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3">Force $\vec{F} = m\vec{a}$</td>
+              <td class="py-2.5 px-3 text-emerald-300">Torque $\vec{\tau} = I\vec{\alpha}$</td>
+              <td class="py-2.5 px-3 text-slate-400">$\vec{\tau} = \vec{r} \times \vec{F}$</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3">Linear Momentum $\vec{p} = m\vec{v}$</td>
+              <td class="py-2.5 px-3 text-purple-300">Angular Momentum $\vec{L} = I\vec{\omega}$</td>
+              <td class="py-2.5 px-3 text-slate-400">$\vec{L} = \vec{r} \times \vec{p}$</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3">Work $W = \int F dx$</td>
+              <td class="py-2.5 px-3 text-amber-300">Work $W = \int \tau d\theta$</td>
+              <td class="py-2.5 px-3 text-slate-400">Power $P = \tau\omega$</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-3">Kinetic Energy $K = \frac{1}{2}mv^2$</td>
+              <td class="py-2.5 px-3 text-amber-300">Rotational KE $K = \frac{1}{2}I\omega^2 = \frac{L^2}{2I}$</td>
+              <td class="py-2.5 px-3 text-slate-400">Total $K = K_{trans} + K_{rot}$</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Module Navigation Tab Switcher
+    function navigateToModule(modId) {
+      const modules = ['turntable', 'com', 'inertia', 'skater', 'incline', 'quiz'];
+      modules.forEach(m => {
+        const sec = document.getElementById('module-' + m);
+        const btn = document.getElementById('nav-' + m);
+        if (m === modId) {
+          sec.classList.remove('hidden');
+          btn.classList.add('active-nav-tab');
+        } else {
+          sec.classList.add('hidden');
+          btn.classList.remove('active-nav-tab');
+        }
+      });
+      if (modId === 'com') drawCOM();
+      if (modId === 'skater') drawSkater();
+      if (modId === 'incline') drawIncline();
+      renderAllMath();
+    }
+
+    function openFormulaModal() {
+      document.getElementById('formulaModal').classList.remove('hidden');
+      renderAllMath();
+    }
+    function closeFormulaModal() {
+      document.getElementById('formulaModal').classList.add('hidden');
+    }
+
+    function renderAllMath() {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    // Module 1: Turntable Kinematics State
+    let ttPlaying = true;
+    let ttTheta = 0;
+    let ttOmega = 2.0; // rad/s (lowercase omega)
+    let ttAlpha = 0.5; // rad/s^2 (alpha)
+    let ttTime = 0;
+    let ttLastTime = null;
+    const ttR_A = 0.40; // meters
+    const ttR_B = 0.90; // meters
+
+    const ttCanvas = document.getElementById('turntableCanvas');
+    const ttCtx = ttCanvas.getContext('2d');
+
+    function toggleTurntablePlay() {
+      ttPlaying = !ttPlaying;
+      const icon = document.getElementById('turntablePlayIcon');
+      icon.setAttribute('data-lucide', ttPlaying ? 'pause' : 'play');
+      lucide.createIcons();
+    }
+
+    function resetTurntable() {
+      ttTheta = 0;
+      ttTime = 0;
+      document.getElementById('rng-omega').value = 2.0;
+      document.getElementById('rng-alpha').value = 0.5;
+      onTurntableSliderChange();
+    }
+
+    function onTurntableSliderChange() {
+      ttOmega = parseFloat(document.getElementById('rng-omega').value);
+      ttAlpha = parseFloat(document.getElementById('rng-alpha').value);
+      document.getElementById('lbl-omega').textContent = ttOmega.toFixed(2) + " rad/s";
+      document.getElementById('lbl-alpha').textContent = ttAlpha.toFixed(2) + " rad/s²";
+
+      // Applied torque calculation: tau = r * F * sin(phi)
+      const F = parseFloat(document.getElementById('rng-force').value);
+      const angleDeg = parseFloat(document.getElementById('rng-force-angle').value);
+      const phiRad = (angleDeg * Math.PI) / 180;
+      const tau = 1.0 * F * Math.sin(phiRad);
+      document.getElementById('lbl-torque').textContent = "τ = " + tau.toFixed(2) + " N·m";
+      updateRHRBadges();
+    }
+
+    function updateRHRBadges() {
+      const gBadge = document.getElementById('globalRHRBadge');
+      const cIcon = document.getElementById('centerRHRVector');
+      const cDir = document.getElementById('centerRHRDir');
+
+      if (Math.abs(ttOmega) < 0.05) {
+        gBadge.textContent = "STATIC (0)";
+        cIcon.textContent = "•";
+        cDir.textContent = "0";
+      } else if (ttOmega > 0) {
+        gBadge.innerHTML = "OUT (+z) &#x2299;";
+        cIcon.innerHTML = "&#x2299;";
+        cIcon.className = "text-xl font-bold font-mono text-cyan-400";
+        cDir.textContent = "+z";
+      } else {
+        gBadge.innerHTML = "IN (-z) &#x2297;";
+        cIcon.innerHTML = "&#x2297;";
+        cIcon.className = "text-xl font-bold font-mono text-rose-400";
+        cDir.textContent = "-z";
+      }
+    }
+
+    // Helper: Draw vector arrow with clean text annotation on Canvas
+    function drawArrowOnCanvas(ctx, fx, fy, tx, ty, color, width, label) {
+      const head = 8;
+      const dx = tx - fx;
+      const dy = ty - fy;
+      const len = Math.hypot(dx, dy);
+      if (len < 3) return;
+      const angle = Math.atan2(dy, dx);
+
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = width;
+
+      // Shaft
+      ctx.beginPath();
+      ctx.moveTo(fx, fy);
+      ctx.lineTo(tx, ty);
+      ctx.stroke();
+
+      // Head
+      ctx.beginPath();
+      ctx.moveTo(tx, ty);
+      ctx.lineTo(tx - head * Math.cos(angle - Math.PI / 6), ty - head * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(tx - head * Math.cos(angle + Math.PI / 6), ty - head * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+
+      // Label with proper typographic over-arrow
+      if (label) {
+        ctx.font = 'bold 11px Plus Jakarta Sans, sans-serif';
+        const lx = tx + 8 * Math.cos(angle);
+        const ly = ty + 8 * Math.sin(angle);
+        ctx.fillText(label, lx, ly);
+      }
+      ctx.restore();
+    }
+
+    function updateTurntable(timestamp) {
+      if (!ttLastTime) ttLastTime = timestamp;
+      const dt = Math.min((timestamp - ttLastTime) / 1000, 0.1);
+      ttLastTime = timestamp;
+
+      if (ttPlaying) {
+        ttTime += dt;
+        ttOmega += ttAlpha * dt;
+        ttTheta += ttOmega * dt;
+        document.getElementById('turntableTime').textContent = ttTime.toFixed(2) + "s";
+        document.getElementById('turntableRevs').textContent = (ttTheta / (2 * Math.PI)).toFixed(2);
+        updateRHRBadges();
+      }
+
+      // Compute particle dynamics metrics
+      const vA = Math.abs(ttR_A * ttOmega);
+      const acA = Math.abs(ttOmega * ttOmega * ttR_A);
+      const atA = Math.abs(ttAlpha * ttR_A);
+      const anetA = Math.hypot(acA, atA);
+
+      const vB = Math.abs(ttR_B * ttOmega);
+      const acB = Math.abs(ttOmega * ttOmega * ttR_B);
+      const atB = Math.abs(ttAlpha * ttR_B);
+      const anetB = Math.hypot(acB, atB);
+
+      document.getElementById('tt-vA').textContent = vA.toFixed(2) + " m/s";
+      document.getElementById('tt-acA').textContent = acA.toFixed(2) + " m/s²";
+      document.getElementById('tt-atA').textContent = atA.toFixed(2) + " m/s²";
+      document.getElementById('tt-anetA').textContent = anetA.toFixed(2) + " m/s²";
+
+      document.getElementById('tt-vB').textContent = vB.toFixed(2) + " m/s";
+      document.getElementById('tt-acB').textContent = acB.toFixed(2) + " m/s²";
+      document.getElementById('tt-atB').textContent = atB.toFixed(2) + " m/s²";
+      document.getElementById('tt-anetB').textContent = anetB.toFixed(2) + " m/s²";
+
+      // Render Canvas
+      const dpr = window.devicePixelRatio || 1;
+      const rect = ttCanvas.getBoundingClientRect();
+      if (ttCanvas.width !== rect.width * dpr) {
+        ttCanvas.width = rect.width * dpr;
+        ttCanvas.height = rect.height * dpr;
+      }
+      ttCtx.save();
+      ttCtx.scale(dpr, dpr);
+      const w = rect.width;
+      const h = rect.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      const R_px = w * 0.42;
+
+      ttCtx.clearRect(0, 0, w, h);
+
+      // Rotating disc body
+      ttCtx.save();
+      ttCtx.translate(cx, cy);
+      ttCtx.rotate(ttTheta);
+
+      // Radial background gradient
+      const grad = ttCtx.createRadialGradient(0, 0, 10, 0, 0, R_px);
+      grad.addColorStop(0, '#0f172a');
+      grad.addColorStop(0.8, '#1e293b');
+      grad.addColorStop(1, '#090d16');
+      ttCtx.beginPath();
+      ttCtx.arc(0, 0, R_px, 0, 2 * Math.PI);
+      ttCtx.fillStyle = grad;
+      ttCtx.fill();
+      ttCtx.strokeStyle = 'rgba(56, 189, 248, 0.3)';
+      ttCtx.lineWidth = 2;
+      ttCtx.stroke();
+
+      // Disc spokes
+      ttCtx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
+      ttCtx.lineWidth = 1;
+      for (let i = 0; i < 8; i++) {
+        const ang = (i * Math.PI) / 4;
+        ttCtx.beginPath();
+        ttCtx.moveTo(0, 0);
+        ttCtx.lineTo(R_px * Math.cos(ang), R_px * Math.sin(ang));
+        ttCtx.stroke();
+      }
+
+      // Zero-angle radial reference arm
+      ttCtx.beginPath();
+      ttCtx.moveTo(0, 0);
+      ttCtx.lineTo(R_px, 0);
+      ttCtx.strokeStyle = '#38bdf8';
+      ttCtx.lineWidth = 2;
+      ttCtx.stroke();
+
+      // Particle dots on rotating disc
+      const pxA = R_px * (ttR_A / 1.0);
+      const pxB = R_px * (ttR_B / 1.0);
+
+      ttCtx.beginPath();
+      ttCtx.arc(pxA, 0, 6, 0, 2 * Math.PI);
+      ttCtx.fillStyle = '#f59e0b';
+      ttCtx.fill();
+      ttCtx.strokeStyle = '#fff';
+      ttCtx.stroke();
+
+      ttCtx.beginPath();
+      ttCtx.arc(pxB, 0, 7, 0, 2 * Math.PI);
+      ttCtx.fillStyle = '#38bdf8';
+      ttCtx.fill();
+      ttCtx.strokeStyle = '#fff';
+      ttCtx.stroke();
+
+      ttCtx.restore(); // Restore to global coords for vector drawing
+
+      // Draw Vector Overlays
+      const showVel = document.getElementById('chkShowVel').checked;
+      const showAc = document.getElementById('chkShowAc').checked;
+      const showAt = document.getElementById('chkShowAt').checked;
+      const showAnet = document.getElementById('chkShowAnet').checked;
+      const showForce = document.getElementById('chkShowForce').checked;
+
+      const particles = [
+        { r: ttR_A, color: '#f59e0b', name: 'A' },
+        { r: ttR_B, color: '#38bdf8', name: 'B' }
+      ];
+
+      particles.forEach(p => {
+        const curPx = (p.r / 1.0) * R_px;
+        const px = cx + curPx * Math.cos(ttTheta);
+        const py = cy + curPx * Math.sin(ttTheta);
+
+        const u_rx = Math.cos(ttTheta);
+        const u_ry = Math.sin(ttTheta);
+        const u_tx = -Math.sin(ttTheta);
+        const u_ty = Math.cos(ttTheta);
+
+        // Linear Velocity vector: v = r * omega
+        if (showVel && Math.abs(ttOmega) > 0.05) {
+          const vVal = p.r * ttOmega;
+          drawArrowOnCanvas(ttCtx, px, py, px + u_tx * vVal * 10, py + u_ty * vVal * 10, '#06b6d4', 2, `v_${p.name}`);
+        }
+
+        // Radial Centripetal acceleration: a_c = omega^2 * r (inward)
+        if (showAc && Math.abs(ttOmega) > 0.1) {
+          const ac = ttOmega * ttOmega * p.r;
+          const len = Math.min(ac * 2.5, curPx * 0.85);
+          drawArrowOnCanvas(ttCtx, px, py, px - u_rx * len, py - u_ry * len, '#f59e0b', 1.8, `a_c`);
+        }
+
+        // Tangential acceleration: a_t = alpha * r
+        if (showAt && Math.abs(ttAlpha) > 0.05) {
+          const at = p.r * ttAlpha;
+          drawArrowOnCanvas(ttCtx, px, py, px + u_tx * at * 14, py + u_ty * at * 14, '#f43f5e', 1.8, `a_t`);
+        }
+
+        // Net acceleration vector: a_net = a_c + a_t
+        if (showAnet && (Math.abs(ttOmega) > 0.1 || Math.abs(ttAlpha) > 0.05)) {
+          const acLen = Math.min(ttOmega * ttOmega * p.r * 2.5, curPx * 0.85);
+          const atLen = p.r * ttAlpha * 14;
+          const netX = -u_rx * acLen + u_tx * atLen;
+          const netY = -u_ry * acLen + u_ty * atLen;
+          drawArrowOnCanvas(ttCtx, px, py, px + netX, py + netY, '#818cf8', 2.5, `a_net`);
+        }
+      });
+
+      // Force Vector
+      if (showForce) {
+        const F = parseFloat(document.getElementById('rng-force').value);
+        const angleDeg = parseFloat(document.getElementById('rng-force-angle').value);
+        if (F > 0.1) {
+          const rimX = cx + R_px * Math.cos(ttTheta);
+          const rimY = cy + R_px * Math.sin(ttTheta);
+          const fAngle = ttTheta + (angleDeg * Math.PI) / 180;
+          const fLen = F * 9;
+          drawArrowOnCanvas(ttCtx, rimX, rimY, rimX + fLen * Math.cos(fAngle), rimY + fLen * Math.sin(fAngle), '#10b981', 2.5, `F`);
+        }
+      }
+
+      ttCtx.restore();
+      requestAnimationFrame(updateTurntable);
+    }
+
+    // Module 2: Center of Mass
+    const comCanvas = document.getElementById('comCanvas');
+    const comCtx = comCanvas.getContext('2d');
+    let comParticles = [
+      { id: 1, x: -120, y: -60, m: 2.0, color: '#38bdf8' },
+      { id: 2, x: 130, y: 70, m: 3.0, color: '#f59e0b' }
+    ];
+    let draggedParticle = null;
+
+    function renderCOMMassList() {
+      const container = document.getElementById('comMassList');
+      container.innerHTML = '';
+      comParticles.forEach(p => {
+        const div = document.createElement('div');
+        div.className = "bg-slate-950 p-2 rounded-lg border border-slate-800 flex items-center justify-between text-xs";
+        div.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full" style="background:${p.color}"></span>
+            <span class="text-slate-300 font-medium">Mass $m_${p.id}$</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="range" min="0.5" max="10" step="0.5" value="${p.m}" class="w-24" oninput="updateParticleMass(${p.id}, this.value)">
+            <span class="font-mono text-cyan-300 w-12 text-right">${p.m.toFixed(1)}kg</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+      renderAllMath();
+    }
+
+    function updateParticleMass(id, val) {
+      const p = comParticles.find(item => item.id === id);
+      if (p) p.m = parseFloat(val);
+      drawCOM();
+    }
+
+    function addCOMParticle() {
+      if (comParticles.length >= 5) return;
+      const newId = comParticles.length + 1;
+      const colors = ['#ec4899', '#a855f7', '#10b981'];
+      comParticles.push({
+        id: newId,
+        x: (Math.random() - 0.5) * 200,
+        y: (Math.random() - 0.5) * 150,
+        m: 2.0,
+        color: colors[(newId - 3) % colors.length]
+      });
+      renderCOMMassList();
+      drawCOM();
+    }
+
+    function resetCOMParticles() {
+      comParticles = [
+        { id: 1, x: -120, y: -60, m: 2.0, color: '#38bdf8' },
+        { id: 2, x: 130, y: 70, m: 3.0, color: '#f59e0b' }
+      ];
+      renderCOMMassList();
+      drawCOM();
+    }
+
+    function drawCOM() {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = comCanvas.getBoundingClientRect();
+      if (comCanvas.width !== rect.width * dpr) {
+        comCanvas.width = rect.width * dpr;
+        comCanvas.height = rect.height * dpr;
+      }
+      comCtx.save();
+      comCtx.scale(dpr, dpr);
+      const w = rect.width;
+      const h = rect.height;
+      const cx = w / 2;
+      const cy = h / 2;
+
+      comCtx.clearRect(0, 0, w, h);
+
+      // Coordinate Grid
+      comCtx.strokeStyle = 'rgba(30, 41, 59, 0.6)';
+      comCtx.lineWidth = 1;
+      const step = 40;
+      for (let x = cx % step; x < w; x += step) {
+        comCtx.beginPath(); comCtx.moveTo(x, 0); comCtx.lineTo(x, h); comCtx.stroke();
+      }
+      for (let y = cy % step; y < h; y += step) {
+        comCtx.beginPath(); comCtx.moveTo(0, y); comCtx.lineTo(w, y); comCtx.stroke();
+      }
+
+      // X and Y Axes
+      comCtx.strokeStyle = '#334155';
+      comCtx.lineWidth = 1.5;
+      comCtx.beginPath();
+      comCtx.moveTo(0, cy); comCtx.lineTo(w, cy);
+      comCtx.moveTo(cx, 0); comCtx.lineTo(cx, h);
+      comCtx.stroke();
+
+      // Compute Center of Mass
+      let totalM = 0;
+      let sumMX = 0;
+      let sumMY = 0;
+
+      comParticles.forEach(p => {
+        totalM += p.m;
+        sumMX += p.m * p.x;
+        sumMY += p.m * p.y;
+      });
+
+      const comX = sumMX / totalM;
+      const comY = sumMY / totalM;
+
+      document.getElementById('comPosText').textContent = `X: ${(comX / 40).toFixed(2)} m, Y: ${(-comY / 40).toFixed(2)} m`;
+      document.getElementById('comTotalMass').textContent = totalM.toFixed(1) + " kg";
+
+      // Lines connecting particles to Center of Mass
+      comCtx.strokeStyle = 'rgba(244, 63, 94, 0.3)';
+      comCtx.setLineDash([4, 4]);
+      comParticles.forEach(p => {
+        comCtx.beginPath();
+        comCtx.moveTo(cx + p.x, cy + p.y);
+        comCtx.lineTo(cx + comX, cy + comY);
+        comCtx.stroke();
+      });
+      comCtx.setLineDash([]);
+
+      // Draw Individual Particles
+      comParticles.forEach(p => {
+        const radius = 8 + p.m * 2;
+        comCtx.beginPath();
+        comCtx.arc(cx + p.x, cy + p.y, radius, 0, 2 * Math.PI);
+        comCtx.fillStyle = p.color;
+        comCtx.fill();
+        comCtx.strokeStyle = '#fff';
+        comCtx.lineWidth = 2;
+        comCtx.stroke();
+
+        comCtx.fillStyle = '#f8fafc';
+        comCtx.font = '10px Plus Jakarta Sans';
+        comCtx.fillText(`m${p.id} (${p.m}kg)`, cx + p.x - 14, cy + p.y - radius - 4);
+      });
+
+      // Draw Center of Mass Star Indicator
+      const comScreenX = cx + comX;
+      const comScreenY = cy + comY;
+
+      comCtx.beginPath();
+      comCtx.arc(comScreenX, comScreenY, 8, 0, 2 * Math.PI);
+      comCtx.fillStyle = '#f43f5e';
+      comCtx.fill();
+      comCtx.strokeStyle = '#fff';
+      comCtx.lineWidth = 2;
+      comCtx.stroke();
+
+      comCtx.fillStyle = '#f43f5e';
+      comCtx.font = 'bold 11px Plus Jakarta Sans';
+      comCtx.fillText('★ COM', comScreenX + 12, comScreenY + 4);
+
+      comCtx.restore();
+    }
+
+    // Touch & Mouse Dragging for COM
+    comCanvas.addEventListener('mousedown', e => {
+      const rect = comCanvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left - rect.width / 2;
+      const mouseY = e.clientY - rect.top - rect.height / 2;
+
+      for (let p of comParticles) {
+        const dist = Math.hypot(p.x - mouseX, p.y - mouseY);
+        if (dist < 16 + p.m * 2) {
+          draggedParticle = p;
+          break;
+        }
+      }
+    });
+
+    window.addEventListener('mousemove', e => {
+      if (draggedParticle) {
+        const rect = comCanvas.getBoundingClientRect();
+        draggedParticle.x = e.clientX - rect.left - rect.width / 2;
+        draggedParticle.y = e.clientY - rect.top - rect.height / 2;
+        drawCOM();
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      draggedParticle = null;
+    });
+
+    // Module 3: Inertia Theorem Calculators
+    function calcParallelAxis() {
+      const d = parseFloat(document.getElementById('parallel-d').value);
+      document.getElementById('parallel-d-lbl').textContent = d.toFixed(2) + " m";
+      const M = 2.0;
+      const I_cm = 1.0; // Base Disc: 0.5 * 2 * 1^2
+      const I_parallel = I_cm + M * (d * d);
+      document.getElementById('parallel-result').textContent = I_parallel.toFixed(2) + " kg·m²";
+    }
+
+    function calcPerpAxis() {
+      const ix = parseFloat(document.getElementById('perp-ix').value);
+      const iy = parseFloat(document.getElementById('perp-iy').value);
+      document.getElementById('perp-ix-lbl').textContent = ix.toFixed(2) + " kg·m²";
+      document.getElementById('perp-iy-lbl').textContent = iy.toFixed(2) + " kg·m²";
+      document.getElementById('perp-result').textContent = (ix + iy).toFixed(2) + " kg·m²";
+    }
+
+    // Module 4: Angular Momentum Skater
+    const skaterCanvas = document.getElementById('skaterCanvas');
+    const skaterCtx = skaterCanvas.getContext('2d');
+    let skaterTheta = 0;
+    let skaterR = 0.90;
+    const skaterFixedL = 5.40; // L = constant (kg·m^2/s)
+
+    function updateSkaterPhysics() {
+      skaterR = parseFloat(document.getElementById('skater-r').value);
+      document.getElementById('skater-r-lbl').textContent = skaterR.toFixed(2) + " m (" + (skaterR > 0.6 ? "Extended" : "Tucked In") + ")";
+      drawSkater();
+    }
+
+    function setSkaterR(r) {
+      document.getElementById('skater-r').value = r;
+      updateSkaterPhysics();
+    }
+
+    function drawSkater() {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = skaterCanvas.getBoundingClientRect();
+      if (skaterCanvas.width !== rect.width * dpr) {
+        skaterCanvas.width = rect.width * dpr;
+        skaterCanvas.height = rect.height * dpr;
+      }
+      skaterCtx.save();
+      skaterCtx.scale(dpr, dpr);
+      const w = rect.width;
+      const h = rect.height;
+      const cx = w / 2;
+      const cy = h / 2;
+
+      skaterCtx.clearRect(0, 0, w, h);
+
+      // Total Inertia: Central body (0.50) + 2 weights of 1.5kg at radius r
+      const I = 0.50 + 2 * (1.5 * skaterR * skaterR);
+      const omega = skaterFixedL / I; // omega = L / I
+      const KE = 0.5 * I * omega * omega; // Rotational KE = 1/2 I omega^2
+
+      document.getElementById('skater-disp-I').textContent = I.toFixed(2) + " kg·m²";
+      document.getElementById('skater-disp-w').textContent = omega.toFixed(2) + " rad/s";
+      document.getElementById('skater-disp-L').textContent = skaterFixedL.toFixed(2) + " J·s";
+      document.getElementById('skater-disp-KE').textContent = KE.toFixed(2) + " J";
+
+      skaterTheta += omega * 0.025;
+
+      // Platform
+      skaterCtx.save();
+      skaterCtx.translate(cx, cy);
+      skaterCtx.rotate(skaterTheta);
+
+      skaterCtx.beginPath();
+      skaterCtx.arc(0, 0, 110, 0, 2 * Math.PI);
+      skaterCtx.fillStyle = '#0f172a';
+      skaterCtx.fill();
+      skaterCtx.strokeStyle = 'rgba(168, 85, 247, 0.4)';
+      skaterCtx.lineWidth = 3;
+      skaterCtx.stroke();
+
+      // Skater Torso
+      skaterCtx.beginPath();
+      skaterCtx.arc(0, 0, 22, 0, 2 * Math.PI);
+      skaterCtx.fillStyle = '#6366f1';
+      skaterCtx.fill();
+
+      // Arms
+      const armPx = skaterR * 105;
+      skaterCtx.strokeStyle = '#c084fc';
+      skaterCtx.lineWidth = 6;
+      skaterCtx.lineCap = 'round';
+      skaterCtx.beginPath();
+      skaterCtx.moveTo(-armPx, 0);
+      skaterCtx.lineTo(armPx, 0);
+      skaterCtx.stroke();
+
+      // Hand weights
+      [-armPx, armPx].forEach(x => {
+        skaterCtx.beginPath();
+        skaterCtx.arc(x, 0, 11, 0, 2 * Math.PI);
+        skaterCtx.fillStyle = '#e879f9';
+        skaterCtx.fill();
+        skaterCtx.strokeStyle = '#fff';
+        skaterCtx.lineWidth = 2;
+        skaterCtx.stroke();
+      });
+
+      skaterCtx.restore();
+      skaterCtx.restore();
+    }
+
+    setInterval(() => {
+      if (!document.getElementById('module-skater').classList.contains('hidden')) {
+        drawSkater();
+      }
+    }, 25);
+
+    // Module 5: Incline Rolling Race
+    const inclineCanvas = document.getElementById('inclineCanvas');
+    const incCtx = inclineCanvas.getContext('2d');
+    let incAngle = 25;
+    let raceActive = false;
+
+    const bodies = [
+      { name: 'Solid Sphere', c: 2/5, color: '#10b981', pos: 0 },
+      { name: 'Solid Disc', c: 1/2, color: '#06b6d4', pos: 0 },
+      { name: 'Hollow Sphere', c: 2/3, color: '#818cf8', pos: 0 },
+      { name: 'Ring / Shell', c: 1.0, color: '#f43f5e', pos: 0 }
+    ];
+
+    function updateInclineAngle() {
+      incAngle = parseInt(document.getElementById('incline-angle').value);
+      document.getElementById('incline-angle-lbl').textContent = incAngle + "°";
+      drawIncline();
+    }
+
+    function startInclineRace() {
+      bodies.forEach(b => b.pos = 0);
+      raceActive = true;
+      document.getElementById('raceWinnerBanner').classList.add('hidden');
+    }
+
+    function resetInclineRace() {
+      raceActive = false;
+      bodies.forEach(b => b.pos = 0);
+      document.getElementById('raceWinnerBanner').classList.add('hidden');
+      drawIncline();
+    }
+
+    function drawIncline() {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = inclineCanvas.getBoundingClientRect();
+      if (inclineCanvas.width !== rect.width * dpr) {
+        inclineCanvas.width = rect.width * dpr;
+        inclineCanvas.height = rect.height * dpr;
+      }
+      incCtx.save();
+      incCtx.scale(dpr, dpr);
+      const w = rect.width;
+      const h = rect.height;
+
+      incCtx.clearRect(0, 0, w, h);
+
+      // Incline Ramp
+      const startX = 40;
+      const startY = 50;
+      const endX = w - 40;
+      const endY = h - 50;
+      const rampLength = Math.hypot(endX - startX, endY - startY);
+      const angleRad = Math.atan2(endY - startY, endX - startX);
+
+      incCtx.fillStyle = '#1e293b';
+      incCtx.beginPath();
+      incCtx.moveTo(startX, startY);
+      incCtx.lineTo(endX, endY);
+      incCtx.lineTo(startX, endY);
+      incCtx.closePath();
+      incCtx.fill();
+      incCtx.strokeStyle = '#334155';
+      incCtx.lineWidth = 2;
+      incCtx.stroke();
+
+      // Finish Line Marker
+      incCtx.strokeStyle = '#10b981';
+      incCtx.lineWidth = 3;
+      incCtx.beginPath();
+      incCtx.moveTo(endX, endY - 25);
+      incCtx.lineTo(endX, endY);
+      incCtx.stroke();
+
+      // Roll bodies down the incline
+      bodies.forEach((b, idx) => {
+        // a = g * sin(theta) / (1 + c)
+        const a_factor = 1 / (1 + b.c);
+        if (raceActive) {
+          b.pos += 0.5 * a_factor * 0.0018 * (incAngle / 25);
+          if (b.pos >= 1) {
+            b.pos = 1;
+            document.getElementById('raceWinnerBanner').classList.remove('hidden');
+          }
+        }
+
+        const curDist = b.pos * (rampLength - 30);
+        const bx = startX + curDist * Math.cos(angleRad) - idx * 4;
+        const by = startY + curDist * Math.sin(angleRad) - 14 - (idx * 2);
+
+        // Body circle
+        incCtx.save();
+        incCtx.translate(bx, by);
+        incCtx.rotate(curDist * 0.1);
+        incCtx.beginPath();
+        incCtx.arc(0, 0, 11, 0, 2 * Math.PI);
+        incCtx.fillStyle = b.color;
+        incCtx.fill();
+        incCtx.strokeStyle = '#fff';
+        incCtx.lineWidth = 1.5;
+        incCtx.stroke();
+
+        // Cross spoke
+        incCtx.strokeStyle = '#000';
+        incCtx.beginPath();
+        incCtx.moveTo(-11, 0); incCtx.lineTo(11, 0);
+        incCtx.moveTo(0, -11); incCtx.lineTo(0, 11);
+        incCtx.stroke();
+        incCtx.restore();
+      });
+
+      incCtx.restore();
+
+      if (raceActive) {
+        requestAnimationFrame(drawIncline);
+      }
+    }
+
+    // Module 6: Quiz System
+    const quizQuestions = [
+      {
+        q: "1. A ballet dancer folds her outstretched arms while spinning on low-friction ice. Which quantity remains strictly constant?",
+        options: [
+          "Rotational Kinetic Energy",
+          "Angular Momentum (L)",
+          "Angular Velocity (ω)",
+          "Moment of Inertia (I)"
+        ],
+        correct: 1,
+        explanation: "External torque τ_ext is zero, so angular momentum L = Iω is strictly conserved. Rotational kinetic energy increases because her muscles do work to pull her arms inward against centrifugal tendency."
+      },
+      {
+        q: "2. A solid sphere, circular disc, and ring of identical mass and radius roll down an incline without slipping. Which reaches the bottom first?",
+        options: [
+          "Ring (k²/R² = 1)",
+          "Disc (k²/R² = 1/2)",
+          "Solid Sphere (k²/R² = 2/5)",
+          "All reach at the same instant"
+        ],
+        correct: 2,
+        explanation: "Linear acceleration is a = g sinθ / (1 + k²/R²). The solid sphere has the lowest gyration ratio (k²/R² = 0.40), giving it the greatest acceleration and quickest descent."
+      },
+      {
+        q: "3. If the net external force on a system of particles is zero (Σ F_ext = 0), what can be definitively concluded?",
+        options: [
+          "The Center of Mass must remain completely at rest.",
+          "The Center of Mass moves with constant velocity.",
+          "The system cannot undergo any rotation.",
+          "Every individual particle in the system has zero velocity."
+        ],
+        correct: 1,
+        explanation: "By Newton's 2nd Law for a system, F_ext = M * a_cm. If F_ext = 0, then a_cm = 0, meaning V_cm is strictly constant in both magnitude and direction."
+      },
+      {
+        q: "4. The perpendicular axis theorem (I_z = I_x + I_y) applies to which type of body?",
+        options: [
+          "A solid sphere",
+          "A solid cylinder",
+          "A 2D planar body (lamina) lying in the xy-plane",
+          "Any arbitrary 3D rigid body"
+        ],
+        correct: 2,
+        explanation: "The perpendicular axis theorem applies strictly and exclusively to 2D planar lamina bodies lying in the xy-plane."
+      },
+      {
+        q: "5. For a sphere rolling without slipping on a stationary horizontal surface, what is the instantaneous velocity of the point of contact?",
+        options: [
+          "v_cm (forward)",
+          "2 v_cm (forward)",
+          "Zero (instantaneously at rest)",
+          "Depends on coefficient of friction"
+        ],
+        correct: 2,
+        explanation: "In pure rolling, v_contact = v_cm - Rω = 0. The instantaneous contact point is momentarily stationary relative to the floor."
+      }
+    ];
+
+    let userAnswers = {};
+
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+
+      quizQuestions.forEach((qObj, qIdx) => {
+        const card = document.createElement('div');
+        card.className = "bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3";
+
+        const optHtml = qObj.options.map((opt, oIdx) => `
+          <label class="flex items-center space-x-2.5 p-2 rounded-lg border border-slate-800/80 bg-slate-900/60 hover:bg-slate-800/60 cursor-pointer transition text-xs">
+            <input type="radio" name="quiz_q_${qIdx}" value="${oIdx}" onchange="selectQuizOption(${qIdx}, ${oIdx})" class="accent-cyan-500">
+            <span class="text-slate-300">${opt}</span>
+          </label>
+        `).join('');
+
+        card.innerHTML = `
+          <div class="font-semibold text-xs sm:text-sm text-slate-200">${qObj.q}</div>
+          <div class="space-y-1.5">${optHtml}</div>
+          <div id="quiz-explain-${qIdx}" class="hidden p-2.5 rounded-lg text-xs leading-relaxed"></div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function selectQuizOption(qIdx, oIdx) {
+      userAnswers[qIdx] = oIdx;
+      const qObj = quizQuestions[qIdx];
+      const explainBox = document.getElementById(`quiz-explain-${qIdx}`);
+      explainBox.classList.remove('hidden');
+
+      if (oIdx === qObj.correct) {
+        explainBox.className = "p-2.5 rounded-lg text-xs bg-emerald-950/40 border border-emerald-800/50 text-emerald-300";
+        explainBox.innerHTML = `<strong>✓ Correct!</strong> ${qObj.explanation}`;
+      } else {
+        explainBox.className = "p-2.5 rounded-lg text-xs bg-rose-950/40 border border-rose-800/50 text-rose-300";
+        explainBox.innerHTML = `<strong>✗ Incorrect.</strong> ${qObj.explanation}`;
+      }
+
+      let score = 0;
+      quizQuestions.forEach((q, idx) => {
+        if (userAnswers[idx] === q.correct) score++;
+      });
+      document.getElementById('quizScoreText').textContent = `${score} / ${quizQuestions.length}`;
+      if (Object.keys(userAnswers).length === quizQuestions.length) {
+        document.getElementById('quizFeedbackFinal').textContent = score >= 4 ? "🌟 Outstanding concept mastery!" : "Review the formula sheet and retry!";
+      }
+    }
+
+    function resetQuiz() {
+      userAnswers = {};
+      document.getElementById('quizScoreText').textContent = `0 / ${quizQuestions.length}`;
+      document.getElementById('quizFeedbackFinal').textContent = "";
+      renderQuiz();
+    }
+
+    // Initialize application on load
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      renderCOMMassList();
+      drawCOM();
+      calcParallelAxis();
+      calcPerpAxis();
+      renderQuiz();
+      drawIncline();
+      renderAllMath();
+      requestAnimationFrame(updateTurntable);
+    });
+
+    window.addEventListener('resize', () => {
+      drawCOM();
+      drawSkater();
+      drawIncline();
+    });
+  </script>
+</body>
+</html>
